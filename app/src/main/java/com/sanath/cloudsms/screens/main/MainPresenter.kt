@@ -7,20 +7,12 @@ import com.sanath.cloudsms.models.User
  * Created by sanath on 21/05/18.
  */
 class MainPresenter : MainContract.Presenter {
-
     private val view: MainContract.View
     private val model: MainContract.Model
 
     constructor(view: MainContract.View) {
         this.view = view
         this.model = MainModel()
-
-        //  Set user logged in status on startup
-//        if (model.isUserSignedIn()) {
-//            this.view.toggleAccountIcon(true)
-//        } else {
-//            this.view.toggleAccountIcon(false)
-//        }
     }
 
     override fun handleAccountButtonClicked() {
@@ -38,7 +30,43 @@ class MainPresenter : MainContract.Presenter {
 
     override fun handleSignInSuccess(account: GoogleUserAccount) {
         view.toggleAccountIcon(true)
-        view.showMessage("Successfully signed in")
+        view.showToast("Successfully signed in")
         model.signInUser(User(account))
+    }
+
+    override fun handleListItemLongPressed(position: Int) {
+        if (!view.isMultiSelectionMode()) {
+            view.enterMultiSelectMode()
+        }
+        multiSelect(position)
+    }
+
+    override fun handleListItemClicked(position: Int) {
+        if (view.isMultiSelectionMode()) {
+            multiSelect(position)
+        } else {
+            //  TODO("Open message screen")
+        }
+    }
+
+    override fun onViewCreated() {
+        view.showMessagesList(model.getMessages())
+    }
+
+    override fun handleExitMultiSelectMode() {
+        view.exitMultiSelectMode()
+    }
+
+    private fun multiSelect(position: Int) {
+        val message = model.getMessages()[position]
+
+        if (!model.isItemSelected(message)) {
+            model.addSelectedItem(message)
+            view.highlightSelectedItem(message)
+        } else {
+            model.removeSelectedItem(message)
+            view.unhighlightSelectedItem(message)
+            if (model.getSelectedItems().isEmpty()) view.exitMultiSelectMode()
+        }
     }
 }

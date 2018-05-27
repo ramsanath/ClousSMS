@@ -24,6 +24,9 @@ class SmsFetcher private constructor() {
     }
 
     internal fun get(): List<Sms> {
+        //TODO("Debug the sort option")
+        val sort = if (builder.sortByField == null) null else
+            builder.sortByField + " " + (if (builder.sortOrder == null) "ASC" else builder.sortOrder)
 
         val smsList = ArrayList<Sms>()
         val cursor: Cursor = builder.context?.contentResolver!!.query(
@@ -41,7 +44,7 @@ class SmsFetcher private constructor() {
                         Attributes.STATUS),
                 null,
                 null,
-                builder.sortByField + " " + builder.sortOrder)
+                null)
 
         //  Just to reduce the number of lines
         fun getValue(column: String) = cursor.getString(cursor.getColumnIndex(column))

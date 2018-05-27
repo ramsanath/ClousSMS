@@ -53,7 +53,7 @@ class Helper {
         inline fun <reified T> Gson.fromJson(json: String) =
                 this.fromJson<T>(json, object : TypeToken<T>() {}.type)
 
-        fun putMessageArgs(fragment: Fragment, message: List<Sms>) {
+        fun putFragmentArgs(fragment: Fragment, message: List<Sms>) {
             val type = object : TypeToken<List<Sms>>() {}.type
             val bundle = Bundle()
             val messagesJson = Gson().toJson(message, type)
@@ -61,7 +61,7 @@ class Helper {
             fragment.arguments = bundle
         }
 
-        fun getMessageArgs(fragment: Fragment): List<Sms> {
+        fun getFragmentArgs(fragment: Fragment): List<Sms> {
             val messagesJson: String = fragment.arguments.getString(Constants.MESSAGE_LIST.name)
             return Gson().fromJson<List<Sms>>(messagesJson)
         }

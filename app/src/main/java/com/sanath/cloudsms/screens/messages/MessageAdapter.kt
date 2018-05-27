@@ -20,9 +20,9 @@ import com.sanath.smswrapper.models.Sms
  */
 class MessageAdapter(
         private val context: Context,
-        private val list: List<Sms>) : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
+        private var messages: List<Sms>) : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
 
-    private var selectedIds: List<Int> = ArrayList()
+    private var selectedItems: List<Sms> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         val inflater = LayoutInflater.from(context)
@@ -32,26 +32,30 @@ class MessageAdapter(
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
-        val msg = list[position]
+        val msg = messages[position]
 
         holder.sender.text = msg.sender
         holder.msgBody.text = msg.body
 
-        if (selectedIds.contains(msg.internalId)) {
+        if (selectedItems.contains(msg)) {
             //if item is selected then,set foreground color of FrameLayout.
-            holder.rootView.foreground = ColorDrawable(ContextCompat.getColor(context, android.R.color.holo_blue_bright))
+            holder.rootView.background = ColorDrawable(ContextCompat.getColor(context, R.color.colorSelectedItem))
         } else {
             //else remove selected item color.
-            holder.rootView.foreground = ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent))
+            holder.rootView.background = ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent))
         }
     }
 
-    override fun getItemCount() = list.size
+    override fun getItemCount() = messages.size
 
-    fun getItem(position: Int) = list[position]
+    fun setSelectedItems(selectedItems: List<Sms>) {
+        this.selectedItems = selectedItems
+        notifyDataSetChanged()
+    }
 
-    fun setSelectedIds(selectedIds: List<Int>) {
-        this.selectedIds = selectedIds
+    fun setData(messages: List<Sms>) {
+        this.messages = messages
+        this.selectedItems = ArrayList()
         notifyDataSetChanged()
     }
 

@@ -3,25 +3,34 @@ package com.sanath.cloudsms.screens.main
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import com.google.android.gms.common.api.ApiException
 import com.sanath.cloudsms.R
 import com.sanath.cloudsms.commons.Helper
 import com.sanath.cloudsms.di.Injector
-import com.sanath.cloudsms.screens.messages.MessageListFragment
-import com.sanath.smswrapper.SmsConstants
-import com.sanath.smswrapper.sms.SmsFetcher
+import com.sanath.cloudsms.screens.RecyclerItemClickListener
+import com.sanath.cloudsms.screens.messages.MessageAdapter
+import com.sanath.smswrapper.models.Sms
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.component_toolbar.*
 
 
-class MainActivity : AppCompatActivity(), MainContract.View {
+class MainActivity : AppCompatActivity(), MainContract.View, ActionMode.Callback {
 
     private val tag = this::class.java.name
     private val googleAuth = Injector.inject().googleAuth()
+
+    private var actionMode: ActionMode? = null
+    private var isMultiSelectMode = false
+    private lateinit var selectedItems: List<Sms>
+
+    private lateinit var listAdapter: MessageAdapter
 
     /*
     Keep a reference to the account menu item in the toolbar
@@ -32,6 +41,9 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
     private lateinit var presenter: MainContract.Presenter
 
+
+    //  Activity
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -39,21 +51,23 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
         presenter = MainPresenter(this)
 
-        //  For testing purpose only
-        val messages = SmsFetcher.builder(this)
-                .from(SmsConstants.MsgBox.ALL)
-                .limit(2)
-                .sortAscBy(SmsConstants.Attributes.DATE)
-                .get()
+        //  Initialise with an empty list
+        listAdapter = MessageAdapter(this, ArrayList())
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = listAdapter
 
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        val messageListFragment = MessageListFragment()
+        recyclerView.addOnItemTouchListener(RecyclerItemClickListener(this,
+                recyclerView, object : RecyclerItemClickListener.OnItemClickListener {
 
-        Helper.putMessageArgs(messageListFragment, messages)
+            override fun onItemClick(view: View, position: Int) {
+                presenter.handleListItemClicked(position)
+            }
 
-        fragmentTransaction.add(fragmentContainer.id, messageListFragment, "Messages")
-        fragmentTransaction.commit()
-        //  End
+            override fun onItemLongClick(view: View, position: Int) {
+                presenter.handleListItemLongPressed(position)
+            }
+        }))
+        presenter.onViewCreated()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -88,6 +102,36 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         }
     }
 
+    //  End
+
+
+    // ActionMode.Callback
+
+    override fun onActionItemClicked(mode: ActionMode?, menu: MenuItem?): Boolean {
+        when (menu?.itemId) {
+            R.id.action_delete -> {
+                Toast.makeText(this@MainActivity, selectedItems.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
+        return false
+    }
+
+    override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+        mode?.menuInflater?.inflate(R.menu.activity_main_action_mode, menu)
+        return true
+    }
+
+    override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?) = false
+
+    override fun onDestroyActionMode(mode: ActionMode?) {
+        presenter.handleExitMultiSelectMode()
+    }
+
+    //  End
+
+
+    //  MainContract.View
+
     override fun attemptGoogleSignIn() {
         googleAuth.signIn(this)
     }
@@ -100,8 +144,46 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         }
     }
 
-    override fun showMessage(message: String) {
+    override fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
+    override fun enterMultiSelectMode() {
+        isMultiSelectMode = true
+        selectedItems = ArrayList()
+
+        if (actionMode == null) {
+            actionMode = startActionMode(this@MainActivity)
+        }
+    }
+
+    override fun exitMultiSelectMode() {
+        actionMode?.title = ""
+        actionMode?.finish()
+        actionMode = null
+        isMultiSelectMode = false
+        selectedItems = ArrayList()
+        listAdapter.setSelectedItems(ArrayList())
+    }
+
+    override fun showMessagesList(messages: List<Sms>) {
+        listAdapter.setData(messages)
+        listAdapter.setSelectedItems(ArrayList())
+    }
+
+    override fun highlightSelectedItem(item: Sms) {
+        selectedItems += item
+        listAdapter.setSelectedItems(selectedItems)
+        actionMode?.title = selectedItems.size.toString()
+    }
+
+    override fun unhighlightSelectedItem(item: Sms) {
+        selectedItems -= item
+        listAdapter.setSelectedItems(selectedItems)
+        actionMode?.title = selectedItems.size.toString()
+    }
+
+    override fun isMultiSelectionMode() = isMultiSelectMode
+
+    //  End
 }
