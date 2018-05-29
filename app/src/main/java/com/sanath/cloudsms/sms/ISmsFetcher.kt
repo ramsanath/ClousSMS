@@ -1,6 +1,7 @@
 package com.sanath.smswrapper.sms
 
-import com.sanath.smswrapper.models.Sms
+import com.sanath.cloudsms.models.Sms
+
 
 /**
  * Created by sanath on 17/05/18.

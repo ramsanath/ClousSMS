@@ -1,8 +1,8 @@
 package com.sanath.cloudsms.screens.main
 
 import com.sanath.cloudsms.models.GoogleUserAccount
+import com.sanath.cloudsms.models.Sms
 import com.sanath.cloudsms.models.User
-import com.sanath.smswrapper.models.Sms
 
 /**
  * Created by sanath on 21/05/18.

@@ -1,13 +1,12 @@
-package com.sanath.smswrapper.models
+package com.sanath.cloudsms.models
 
-import com.sanath.smswrapper.util.Util
+import com.sanath.cloudsms.commons.Util
 import java.util.*
 
 /**
  * Created by sanath on 17/05/18.
  */
 class Sms {
-    var internalId: Int? = null
     var sender: String? = null
     var body: String? = null
     var subject: String? = null
@@ -21,8 +20,7 @@ class Sms {
     var messageStatus: Int? = null
 
     override fun toString(): String {
-        return "internalId: $internalId\n" +
-                "sender: $sender\n" +
+        return "sender: $sender\n" +
                 "body: $body\n" +
                 "subject: $subject\n" +
                 "receivedAt: $receivedAt\n" +

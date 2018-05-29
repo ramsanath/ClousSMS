@@ -12,7 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.sanath.cloudsms.R
-import com.sanath.smswrapper.models.Sms
+import com.sanath.cloudsms.models.Sms
 
 
 /**

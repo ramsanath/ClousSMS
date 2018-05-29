@@ -12,7 +12,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.sanath.cloudsms.models.GoogleUserAccount
-import com.sanath.smswrapper.models.Sms
+import com.sanath.cloudsms.models.Sms
 
 
 /**

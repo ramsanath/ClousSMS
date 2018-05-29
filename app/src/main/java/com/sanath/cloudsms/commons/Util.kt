@@ -1,12 +1,11 @@
-package com.sanath.smswrapper.util
+package com.sanath.cloudsms.commons
 
 import java.util.*
 
 /**
  * Created by sanath on 17/05/18.
  */
-internal class Util {
-
+class Util {
     companion object {
         fun timestampToDate(timestamp: String) = Date(timestamp.toLong())
         fun dateToTimestamp(date: Date) = date.time / 1000

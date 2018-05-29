@@ -14,9 +14,9 @@ import com.google.android.gms.common.api.ApiException
 import com.sanath.cloudsms.R
 import com.sanath.cloudsms.commons.Helper
 import com.sanath.cloudsms.di.Injector
+import com.sanath.cloudsms.models.Sms
 import com.sanath.cloudsms.screens.RecyclerItemClickListener
 import com.sanath.cloudsms.screens.messages.MessageAdapter
-import com.sanath.smswrapper.models.Sms
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.component_toolbar.*
 
@@ -73,6 +73,9 @@ class MainActivity : AppCompatActivity(), MainContract.View, ActionMode.Callback
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_main, menu)
         accountMenuItem = menu.findItem(R.id.action_account)
+
+        //  WARN: This is a temp-fix. should be changed asap!
+        toggleAccountIcon(MainModel().isUserSignedIn())
         return true
     }
 

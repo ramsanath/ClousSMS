@@ -3,10 +3,10 @@ package com.sanath.smswrapper.sms
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import com.sanath.cloudsms.commons.Util
+import com.sanath.cloudsms.models.Sms
 import com.sanath.smswrapper.SmsConstants
 import com.sanath.smswrapper.SmsConstants.Attributes
-import com.sanath.smswrapper.models.Sms
-import com.sanath.smswrapper.util.Util
 
 /**
  * Created by sanath on 17/05/18.
@@ -24,7 +24,6 @@ class SmsFetcher private constructor() {
     }
 
     internal fun get(): List<Sms> {
-        //TODO("Debug the sort option")
         val sort = if (builder.sortByField == null) null else
             builder.sortByField + " " + (if (builder.sortOrder == null) "ASC" else builder.sortOrder)
 
@@ -32,7 +31,6 @@ class SmsFetcher private constructor() {
         val cursor: Cursor = builder.context?.contentResolver!!.query(
                 getUri(),
                 arrayOf(
-                        Attributes.INTERNAL_ID,
                         Attributes.ADDRESS,
                         Attributes.DATE,
                         Attributes.MESSAGE_BODY,
@@ -44,7 +42,7 @@ class SmsFetcher private constructor() {
                         Attributes.STATUS),
                 null,
                 null,
-                null)
+                sort)
 
         //  Just to reduce the number of lines
         fun getValue(column: String) = cursor.getString(cursor.getColumnIndex(column))
@@ -54,7 +52,6 @@ class SmsFetcher private constructor() {
             if (limit == 0) break
 
             val sms = Sms()
-            sms.internalId = getValue(Attributes.INTERNAL_ID).toInt()
             sms.threadId = getValue(Attributes.THREAD_ID).toInt()
             sms.sender = getValue(Attributes.ADDRESS)
             sms.receivedAt = Util.timestampToDate(getValue(Attributes.DATE))
@@ -134,10 +131,6 @@ class SmsFetcher private constructor() {
             }
             if (limit == null) {
                 this.limit = -1
-            }
-            if (sortByField == null) {
-                this.sortByField = ""
-                this.sortOrder = ""
             }
             return SmsFetcher(this).get()
         }

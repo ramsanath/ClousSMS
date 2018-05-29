@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/CloudSMS.iml" filepath="$PROJECT_DIR$/CloudSMS.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/smswrapper/smswrapper.iml" filepath="$PROJECT_DIR$/smswrapper/smswrapper.iml" />
     </modules>
   </component>
 </project>

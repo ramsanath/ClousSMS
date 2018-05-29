@@ -3,9 +3,9 @@ package com.sanath.cloudsms.screens.main
 import android.util.Log
 import com.sanath.cloudsms.auth.UserManager
 import com.sanath.cloudsms.di.Injector
+import com.sanath.cloudsms.models.Sms
 import com.sanath.cloudsms.models.User
 import com.sanath.smswrapper.SmsConstants
-import com.sanath.smswrapper.models.Sms
 import com.sanath.smswrapper.sms.SmsFetcher
 
 /**
